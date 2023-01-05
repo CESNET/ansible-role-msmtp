@@ -1,0 +1,14 @@
+# set in /etc/default/msmtp in INTERFACE=
+msmtp_listen_interface: "127.0.0.1"
+# set in /etc/aliases in default:
+msmtp_aliases_default: root
+# set in /etc/msmtprc, see https://marlam.de/msmtp/msmtp.html for options
+msmtp_config: |
+  from %U@%H
+  host relay.muni.cz
+  port 25
+  tls off
+  tls_starttls off
+  auth off
+  user test
+  password test

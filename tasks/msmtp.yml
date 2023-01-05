@@ -1,0 +1,59 @@
+- name: "Debian 10/11 required"
+  assert:
+    that:
+      - ansible_distribution == "Debian"
+      - ansible_distribution_major_version is version('10','>=')
+    msg: "Only Debian 10+ is supported, this is {{ ansible_distribution }} {{ ansible_distribution_major_version }}"
+
+- name: "install msmtp-mta package"
+  package:
+    name: msmtp-mta
+    state: present
+
+- name: "make msmtp to listen on selected IP address"
+  lineinfile:
+    state: present
+    path: /etc/default/msmtpd
+    create: true
+    owner: root
+    group: root
+    mode: '0644'
+    regexp: '^INTERFACE='
+    line: "INTERFACE={{ msmtp_listen_interface }}"
+  register: etc_default_msmtpd
+
+- name: "restart msmtpd if config was changed"
+  when: etc_default_msmtpd.changed
+  service:
+    name: msmtpd
+    state: restarted
+
+- name: "create default line in /etc/aliases"
+  lineinfile:
+    state: present
+    path: /etc/aliases
+    create: true
+    owner: root
+    group: root
+    mode: '0644'
+    regexp: '^default:'
+    line: "default: {{ msmtp_aliases_default }}"
+
+- name: "create msmtp config"
+  template:
+    dest: /etc/msmtprc
+    src: msmtprc.j2
+    owner: root
+    group: msmtp
+    mode: '0640'
+
+# with msmtp, mailutils do not work for local names, bsd-mailx must be used
+- name: "install bsd-mailx package"
+  package:
+    name: bsd-mailx
+    state: present
+
+- community.general.alternatives:
+    name: mailx
+    path: /usr/bin/bsd-mailx
+    state: selected

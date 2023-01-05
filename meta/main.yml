@@ -1,0 +1,15 @@
+galaxy_info:
+  role_name: msmtp
+  author: Martin Kuba
+  description: Installs a simple MTA for forwarding emails to a mail relay
+  company: CESNET
+  license: Apache
+  min_ansible_version: 6
+  platforms:
+   - name: Debian
+     versions:
+     - buster
+     - bullseye
+  galaxy_tags:
+    - "system"
+dependencies: []
