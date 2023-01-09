@@ -1,6 +1,12 @@
 # see https://marlam.de/msmtp/msmtp.html
 account default
+# enables logging to /var/log/mail.*
 syslog LOG_MAIL
+# sets location of aliases file
 aliases /etc/aliases
+# default envelope 'MAIL FROM:', %U - username %H - hostname
+from %U@%H
+# sets From: header to the same value as envelope MAIL FROM:, good for cron scripts
+set_from_header on
 
 {{ msmtp_config }}

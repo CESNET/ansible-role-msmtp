@@ -26,7 +26,6 @@ Example Playbook
         msmtp_listen_interface: 0.0.0.0
         msmtp_aliases_default: john@example.org
         msmtp_config: |
-          from %U@%H
           host relay.muni.cz
           port 465
           tls on

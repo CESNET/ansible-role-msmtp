@@ -2,13 +2,21 @@
 msmtp_listen_interface: "127.0.0.1"
 # set in /etc/aliases in default:
 msmtp_aliases_default: root
+# relay DNS name, used just in the variable msmtp_config
+msmtp_relay_name: rs.cesnet.cz
 # set in /etc/msmtprc, see https://marlam.de/msmtp/msmtp.html for options
 msmtp_config: |
-  from %U@%H
-  host relay.muni.cz
+  # SMTP relay DNS name
+  host {{ msmtp_relay_name }}
+  # name used in SMTP EHLO command
+  domain {{ inventory_hostname }}
+  # TCP port for SMTP
   port 25
-  tls off
-  tls_starttls off
+  # encryption on/off
+  tls on
+  # on - connect without TLS then use STARTTLS (port 25), off - start TLS immediately (ports 465 or 587)
+  tls_starttls on
+  # use authentication on/off
   auth off
   user test
   password test
