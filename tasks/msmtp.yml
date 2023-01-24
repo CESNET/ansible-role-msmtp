@@ -10,6 +10,11 @@
     name: msmtp-mta
     state: present
 
+- name: "enable msmtpd after reboot"
+  systemd:
+    name: msmtpd
+    enabled: yes
+
 - name: "make msmtp to listen on selected IP address"
   lineinfile:
     state: present
@@ -21,12 +26,6 @@
     regexp: '^INTERFACE='
     line: "INTERFACE={{ msmtp_listen_interface }}"
   register: etc_default_msmtpd
-
-- name: "restart msmtpd if config was changed"
-  when: etc_default_msmtpd.changed
-  service:
-    name: msmtpd
-    state: restarted
 
 - name: "create default line in /etc/aliases"
   lineinfile:
@@ -46,6 +45,13 @@
     owner: root
     group: msmtp
     mode: '0640'
+  register: etc_msmtprc
+
+- name: "restart msmtpd if config was changed"
+  when: etc_default_msmtpd.changed or etc_msmtprc.changed
+  service:
+    name: msmtpd
+    state: restarted
 
 # with msmtp, mailutils do not work for local names, bsd-mailx must be used
 - name: "install bsd-mailx package"
