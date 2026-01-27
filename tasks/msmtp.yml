@@ -1,9 +1,9 @@
 - name: "Debian 10/11 required"
   assert:
     that:
-      - ansible_distribution == "Debian"
-      - ansible_distribution_major_version is version('10','>=')
-    msg: "Only Debian 10+ is supported, this is {{ ansible_distribution }} {{ ansible_distribution_major_version }}"
+      - ansible_facts['distribution'] == "Debian"
+      - ansible_facts['distribution_major_version'] is version('10','>=')
+    msg: "Only Debian 10+ is supported, this is {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_major_version'] }}"
 
 - name: "install msmtp-mta package"
   package:
