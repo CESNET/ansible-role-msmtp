@@ -6,10 +6,11 @@ galaxy_info:
   license: Apache
   min_ansible_version: 6
   platforms:
-   - name: Debian
-     versions:
-     - buster
-     - bullseye
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+        - trixie
   galaxy_tags:
     - "system"
 dependencies: []
