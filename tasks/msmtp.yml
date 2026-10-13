@@ -1,9 +1,16 @@
-- name: "Debian 10/11 required"
+- name: "Debian 11+ required"
   assert:
     that:
       - ansible_facts['distribution'] == "Debian"
-      - ansible_facts['distribution_major_version'] is version('10','>=')
-    msg: "Only Debian 10+ is supported, this is {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_major_version'] }}"
+      - ansible_facts['distribution_major_version'] is version('11','>=')
+    msg: "Only Debian 11+ is supported, this is {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_major_version'] }}"
+
+- name: "check that variable msmtp_root_email_address is defined"
+  assert:
+    that:
+      - msmtp_root_email_address is defined
+    msg: "Define variable msmtp_root_email_address !"
+    quiet: true
 
 - name: "install msmtp-mta package"
   package:
@@ -27,6 +34,20 @@
     line: "INTERFACE={{ msmtp_listen_interface }}"
   register: etc_default_msmtpd
 
+- name: "create root line in /etc/aliases"
+  lineinfile:
+    state: present
+    path: /etc/aliases
+    create: true
+    owner: root
+    group: root
+    mode: '0644'
+    regexp: '^root:'
+    line: "root: {{ msmtp_root_email_address }}"
+  notify: "run newaliases"
+  tags:
+    - aliases
+
 - name: "create default line in /etc/aliases"
   lineinfile:
     state: present
@@ -37,6 +58,9 @@
     mode: '0644'
     regexp: '^default:'
     line: "default: {{ msmtp_aliases_default }}"
+  notify: "run newaliases"
+  tags:
+    - aliases
 
 - name: "create msmtp config"
   template:
@@ -63,3 +87,6 @@
     name: mailx
     path: /usr/bin/bsd-mailx
     state: selected
+
+- name: "flush handlers"
+  meta: flush_handlers

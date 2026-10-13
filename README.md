@@ -12,6 +12,7 @@ Role Variables
 - **msmtp_listen_interface** - IP address to listen on, default is `127.0.0.1`. Use `0.0.0.0` for all, but
   then set firewall to disable incoming connections from outside. Only a single IPv4 or IPv6 address 
   can be used.
+- **msmtp_root_email_address** - email address to be used in /etc/aliases as root
 - **msmtp_aliases_default** - email address to be used in /etc/aliases as default, default is `root`
 - **msmtp_config** - content of /etc/msmtprc file specifying connection. 
   See [msmtp documentation](https://marlam.de/msmtp/msmtp.html) for options.
@@ -24,7 +25,8 @@ Example Playbook
     - role: cesnet.msmtp
       vars:
         msmtp_listen_interface: 0.0.0.0
-        msmtp_aliases_default: john@example.org
+        msmtp_root_email_address: john@example.org
+        msmtp_aliases_default: root
         msmtp_config: |
           host relay.muni.cz
           port 465

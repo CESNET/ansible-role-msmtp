@@ -1,0 +1,11 @@
+- name: Check if newaliases exists
+  ansible.builtin.command: which newaliases
+  register: newaliases_check
+  failed_when: false
+  changed_when: false
+  listen: "run newaliases"
+
+- name: Run newaliases
+  ansible.builtin.command: newaliases
+  when: newaliases_check.rc == 0
+  listen: "run newaliases"
